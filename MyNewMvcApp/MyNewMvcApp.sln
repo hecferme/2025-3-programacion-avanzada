@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quiniela", "Quiniela\Quiniela.csproj", "{F213D87C-E93A-F523-0C71-3B2C14641636}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNewMvcApp", "MyNewMvcApp.csproj", "{C04218AD-5738-D373-6B96-CEBDFA28DF5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,15 +10,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F213D87C-E93A-F523-0C71-3B2C14641636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F213D87C-E93A-F523-0C71-3B2C14641636}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F213D87C-E93A-F523-0C71-3B2C14641636}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F213D87C-E93A-F523-0C71-3B2C14641636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C04218AD-5738-D373-6B96-CEBDFA28DF5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04218AD-5738-D373-6B96-CEBDFA28DF5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04218AD-5738-D373-6B96-CEBDFA28DF5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04218AD-5738-D373-6B96-CEBDFA28DF5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {104B066F-9661-4B32-AA16-57729F6482B8}
+		SolutionGuid = {C2716363-4DC0-455F-B4A4-B391AE21AC87}
 	EndGlobalSection
 EndGlobal

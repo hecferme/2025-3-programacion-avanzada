@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using MyMvcApp.Models;
+using MyNewMvcApp.Models;
 
-namespace MyMvcApp.Controllers;
+namespace MyNewMvcApp.Controllers;
 
 public class HomeController : Controller
 {
@@ -20,6 +20,12 @@ public class HomeController : Controller
 
     public IActionResult Privacy()
     {
+        return View();
+    }
+
+    public IActionResult About()
+    {
+        ViewBag.CurrentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         return View();
     }
 

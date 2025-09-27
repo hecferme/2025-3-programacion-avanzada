@@ -20,16 +20,10 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
-app.MapControllerRoute(
-    name: "about",
-    pattern: "about",
-    defaults: new { controller = "MyMvcApp", action = "About" });
 
 
 app.Run();
