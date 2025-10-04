@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:r><w:t>[Portada]</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Nombre del estudiante:</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Asignatura:</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Profesor:</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Fecha de entrega:</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Título del trabajo: Convertidor de Monedas en C#</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Vínculo al repositorio en GitHub: [Pega aquí el enlace]</w:t></w:r></w:p>
+    <w:p><w:r><w:t/></w:r></w:p>
+    <w:p><w:r><w:t>1. Conversación con el Agente de Visual Studio Code</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Pega aquí toda la conversación mantenida con el agente (GitHub Copilot o similar), incluyendo las preguntas, respuestas y sugerencias relevantes para el desarrollo del proyecto.</w:t></w:r></w:p>
+    <w:p><w:r><w:t/></w:r></w:p>
+    <w:p><w:r><w:t>2. Análisis de Resultados</w:t></w:r></w:p>
+    <w:p><w:r><w:t>2.1. Cumplimiento de Requisitos</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- ¿Qué requisitos se cumplieron completamente?</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- ¿Qué requisitos se cumplieron parcialmente?</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- ¿Qué requisitos no se realizaron del todo?</w:t></w:r></w:p>
+    <w:p><w:r><w:t>2.2. Dificultades Encontradas</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- (Describe brevemente los principales retos o dificultades técnicas y cómo se resolvieron, si aplica)</w:t></w:r></w:p>
+    <w:p><w:r><w:t/></w:r></w:p>
+    <w:p><w:r><w:t>3. Evidencia de Commits y Flujo de Trabajo en GitHub</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Capturas de pantalla o listado de los principales commits realizados.</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Breve explicación del flujo de trabajo seguido (ramas, pull requests, fusiones, etc.).</w:t></w:r></w:p>
+    <w:p><w:r><w:t/></w:r></w:p>
+    <w:p><w:r><w:t>4. Código Fuente y Pruebas Unitarias</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Breve descripción de la estructura del proyecto.</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Fragmentos relevantes del código fuente (opcional, solo si se desea resaltar algo).</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Evidencia de las pruebas unitarias (resultados de ejecución, capturas de pantalla, etc.).</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Explicación de cómo se garantiza la retrocompatibilidad de las pruebas.</w:t></w:r></w:p>
+    <w:p><w:r><w:t/></w:r></w:p>
+    <w:p><w:r><w:t>5. Conclusiones</w:t></w:r></w:p>
+    <w:p><w:r><w:t>- Reflexión personal sobre el aprendizaje obtenido y sugerencias para mejorar el ejercicio.</w:t></w:r></w:p>
+  </w:body>
+</w:document>
