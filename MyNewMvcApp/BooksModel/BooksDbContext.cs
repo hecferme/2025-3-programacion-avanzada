@@ -11,19 +11,19 @@ public partial class BooksDbContext : DbContext
     {
     }
 
-    public virtual DbSet<author> authors { get; set; }
+    public virtual DbSet<Author> Authors { get; set; }
 
-    public virtual DbSet<book> books { get; set; }
+    public virtual DbSet<Book> Books { get; set; }
 
-    public virtual DbSet<bookcopy> bookcopies { get; set; }
+    public virtual DbSet<BookCopy> BookCopies { get; set; }
 
-    public virtual DbSet<borrow> borrows { get; set; }
+    public virtual DbSet<Borrow> Borrows { get; set; }
 
-    public virtual DbSet<person> persons { get; set; }
+    public virtual DbSet<Person> Persons { get; set; }
 
-    public virtual DbSet<theme> themes { get; set; }
+    public virtual DbSet<Theme> Themes { get; set; }
 
-    public virtual DbSet<xyz> xyzs { get; set; }
+    // demo/system table `xyz` excluded from the model
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,7 +31,7 @@ public partial class BooksDbContext : DbContext
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
 
-        modelBuilder.Entity<author>(entity =>
+        modelBuilder.Entity<Author>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -39,7 +39,7 @@ public partial class BooksDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<book>(entity =>
+        modelBuilder.Entity<Book>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -50,11 +50,11 @@ public partial class BooksDbContext : DbContext
             entity.HasMany(d => d.Authors).WithMany(p => p.Books)
                 .UsingEntity<Dictionary<string, object>>(
                     "bookauthor",
-                    r => r.HasOne<author>().WithMany()
+                    r => r.HasOne<Author>().WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("bookauthors_ibfk_2"),
-                    l => l.HasOne<book>().WithMany()
+                    l => l.HasOne<Book>().WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("bookauthors_ibfk_1"),
@@ -70,11 +70,11 @@ public partial class BooksDbContext : DbContext
             entity.HasMany(d => d.Themes).WithMany(p => p.Books)
                 .UsingEntity<Dictionary<string, object>>(
                     "booktheme",
-                    r => r.HasOne<theme>().WithMany()
+                    r => r.HasOne<Theme>().WithMany()
                         .HasForeignKey("ThemeId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("bookthemes_ibfk_2"),
-                    l => l.HasOne<book>().WithMany()
+                    l => l.HasOne<Book>().WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("bookthemes_ibfk_1"),
@@ -88,7 +88,7 @@ public partial class BooksDbContext : DbContext
                     });
         });
 
-        modelBuilder.Entity<bookcopy>(entity =>
+    modelBuilder.Entity<BookCopy>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -100,13 +100,13 @@ public partial class BooksDbContext : DbContext
             entity.Property(e => e.Provider).HasMaxLength(100);
             entity.Property(e => e.Serial).HasMaxLength(100);
 
-            entity.HasOne(d => d.Book).WithMany(p => p.bookcopies)
+            entity.HasOne(d => d.Book).WithMany(p => p.BookCopies)
                 .HasForeignKey(d => d.BookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("bookcopies_ibfk_1");
         });
 
-        modelBuilder.Entity<borrow>(entity =>
+    modelBuilder.Entity<Borrow>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -114,18 +114,18 @@ public partial class BooksDbContext : DbContext
 
             entity.HasIndex(e => e.PersonId, "PersonId");
 
-            entity.HasOne(d => d.BookCopy).WithMany(p => p.borrows)
+            entity.HasOne(d => d.BookCopy).WithMany(p => p.Borrows)
                 .HasForeignKey(d => d.BookCopyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("borrows_ibfk_1");
 
-            entity.HasOne(d => d.Person).WithMany(p => p.borrows)
+            entity.HasOne(d => d.Person).WithMany(p => p.Borrows)
                 .HasForeignKey(d => d.PersonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("borrows_ibfk_2");
         });
 
-        modelBuilder.Entity<person>(entity =>
+    modelBuilder.Entity<Person>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -137,7 +137,7 @@ public partial class BooksDbContext : DbContext
                 .IsFixedLength();
         });
 
-        modelBuilder.Entity<theme>(entity =>
+    modelBuilder.Entity<Theme>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -145,20 +145,7 @@ public partial class BooksDbContext : DbContext
             entity.Property(e => e.ThemeName).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<xyz>(entity =>
-        {
-            entity.HasKey(e => e.id).HasName("PRIMARY");
-
-            entity.ToTable("xyz");
-
-            entity.HasIndex(e => e.name, "idx_name");
-
-            entity.Property(e => e.id).ValueGeneratedNever();
-            entity.Property(e => e.created_at)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp");
-            entity.Property(e => e.name).HasMaxLength(100);
-        });
+        // xyz table removed from model - demo data only
 
         OnModelCreatingPartial(modelBuilder);
     }
