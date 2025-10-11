@@ -35,5 +35,33 @@ namespace ProgramacionAvanzada.Books.Repositories
             var authors = await LoadAuthorsAsync();
             return bas.Where(ba => authors.Any(a => a.Id == ba.AuthorId && a.Name != null && a.Name.ToLower().Contains(authorName.ToLower())));
         }
+        public async Task<BookAuthor> InsertAsync(BookAuthor entity)
+        {
+            var list = (await LoadAsync()).ToList();
+            list.Add(entity);
+            await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return entity;
+        }
+        public async Task<BookAuthor> UpdateAsync(BookAuthor entity)
+        {
+            var list = (await LoadAsync()).ToList();
+            var idx = list.FindIndex(ba => ba.BookId == entity.BookId && ba.AuthorId == entity.AuthorId);
+            if (idx == -1) throw new KeyNotFoundException();
+            list[idx] = entity;
+            await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return entity;
+        }
+        public async Task<bool> DeleteAsync(object key)
+        {
+            if (key is ValueTuple<int, int> tuple)
+            {
+                var list = (await LoadAsync()).ToList();
+                var removed = list.RemoveAll(ba => ba.BookId == tuple.Item1 && ba.AuthorId == tuple.Item2) > 0;
+                if (removed)
+                    await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+                return removed;
+            }
+            return false;
+        }
     }
 }

@@ -16,5 +16,29 @@ namespace ProgramacionAvanzada.Books.Repositories
         public async Task<IEnumerable<Book>> GetByNameAsync(string name) => (await LoadAsync()).Where(b => (b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(name.ToLower())) || (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower())));
         public async Task<IEnumerable<Book>> GetByOriginalTitleAsync(string originalTitle) => (await LoadAsync()).Where(b => b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(originalTitle.ToLower()));
         public async Task<IEnumerable<Book>> GetByEnglishTitleAsync(string englishTitle) => (await LoadAsync()).Where(b => b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(englishTitle.ToLower()));
+        public async Task<Book> InsertAsync(Book entity)
+        {
+            var list = (await LoadAsync()).ToList();
+            list.Add(entity);
+            await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return entity;
+        }
+        public async Task<Book> UpdateAsync(Book entity)
+        {
+            var list = (await LoadAsync()).ToList();
+            var idx = list.FindIndex(b => b.Id.Equals(entity.Id));
+            if (idx == -1) throw new KeyNotFoundException();
+            list[idx] = entity;
+            await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return entity;
+        }
+        public async Task<bool> DeleteAsync(object key)
+        {
+            var list = (await LoadAsync()).ToList();
+            var removed = list.RemoveAll(b => b.Id.Equals(key)) > 0;
+            if (removed)
+                await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return removed;
+        }
     }
 }

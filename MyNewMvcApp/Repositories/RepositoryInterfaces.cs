@@ -13,6 +13,9 @@ namespace ProgramacionAvanzada.Books.Repositories
     {
         Task<IEnumerable<Book>> GetByOriginalTitleAsync(string originalTitle);
         Task<IEnumerable<Book>> GetByEnglishTitleAsync(string englishTitle);
+        Task<Book> InsertAsync(Book entity);
+        Task<Book> UpdateAsync(Book entity);
+        Task<bool> DeleteAsync(object key);
     }
 
     public interface IBookAuthorRepository : IRepository<BookAuthor>

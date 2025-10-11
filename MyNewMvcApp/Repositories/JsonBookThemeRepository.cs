@@ -41,5 +41,33 @@ namespace ProgramacionAvanzada.Books.Repositories
             var themes = await LoadThemesAsync();
             return bts.Where(bt => themes.Any(t => t.Id == bt.ThemeId && t.Subject != null && t.Subject.ToLower().Contains(subjectName.ToLower())));
         }
+        public async Task<BookTheme> InsertAsync(BookTheme entity)
+        {
+            var list = (await LoadAsync()).ToList();
+            list.Add(entity);
+            await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return entity;
+        }
+        public async Task<BookTheme> UpdateAsync(BookTheme entity)
+        {
+            var list = (await LoadAsync()).ToList();
+            var idx = list.FindIndex(bt => bt.BookId == entity.BookId && bt.ThemeId == entity.ThemeId);
+            if (idx == -1) throw new KeyNotFoundException();
+            list[idx] = entity;
+            await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+            return entity;
+        }
+        public async Task<bool> DeleteAsync(object key)
+        {
+            if (key is ValueTuple<int, int> tuple)
+            {
+                var list = (await LoadAsync()).ToList();
+                var removed = list.RemoveAll(bt => bt.BookId == tuple.Item1 && bt.ThemeId == tuple.Item2) > 0;
+                if (removed)
+                    await File.WriteAllTextAsync(_jsonFilePath, JsonSerializer.Serialize(list));
+                return removed;
+            }
+            return false;
+        }
     }
 }
