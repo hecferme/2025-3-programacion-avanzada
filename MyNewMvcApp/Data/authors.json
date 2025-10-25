@@ -1,4 +1,1 @@
-[
-  { "Id": 1, "Name": "Gabriel García Márquez", "Country": "Colombia" },
-  { "Id": 2, "Name": "J.K. Rowling", "Country": "United Kingdom" }
-]
+[{"Id":1,"Name":"Gabriel Garc\u00EDa M\u00E1rquez","Country":"Colombia","Books":[]},{"Id":2,"Name":"J.K. Rowling","Country":"United Kingdom","Books":[]}]

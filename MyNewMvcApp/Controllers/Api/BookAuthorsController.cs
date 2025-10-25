@@ -3,6 +3,8 @@ using ProgramacionAvanzada.Books.Model;
 using ProgramacionAvanzada.Books.Repositories;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MyNewMvcApp.Controllers.Api
 {
@@ -16,9 +18,25 @@ namespace MyNewMvcApp.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? bookName, [FromQuery] string? authorName)
         {
-            if (!string.IsNullOrWhiteSpace(bookName)) return Ok(await _repo.GetByBookNameAsync(bookName));
-            if (!string.IsNullOrWhiteSpace(authorName)) return Ok(await _repo.GetByAuthorNameAsync(authorName));
-            return Ok(await _repo.GetByNameAsync(""));
+            var result = new List<object>();
+            IEnumerable<BookAuthor> entities;
+            if (!string.IsNullOrWhiteSpace(bookName))
+                entities = await _repo.GetByBookNameAsync(bookName);
+            else if (!string.IsNullOrWhiteSpace(authorName))
+                entities = await _repo.GetByAuthorNameAsync(authorName);
+            else
+                entities = await _repo.GetByNameAsync("");
+
+            foreach (var ba in entities)
+            {
+                result.Add(new {
+                    ba.BookId,
+                    ba.AuthorId,
+                    BookName = ba.Book?.OriginalTitle ?? ba.Book?.EnglishTitle,
+                    AuthorName = ba.Author?.Name
+                });
+            }
+            return Ok(result);
         }
 
         [HttpGet("{bookId}/{authorId}")]

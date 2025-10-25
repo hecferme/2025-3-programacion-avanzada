@@ -19,21 +19,44 @@ namespace ProgramacionAvanzada.Books.Repositories
         public async Task<BookAuthor?> GetByPrimaryKeyAsync(object key)
         {
             if (key is ValueTuple<int, int> tuple)
-                return (await LoadAsync()).FirstOrDefault(ba => ba.BookId == tuple.Item1 && ba.AuthorId == tuple.Item2);
+            {
+                var bas = (await LoadAsync()).ToList();
+                var books = (await LoadBooksAsync()).ToList();
+                var authors = (await LoadAuthorsAsync()).ToList();
+                var ba = bas.FirstOrDefault(x => x.BookId == tuple.Item1 && x.AuthorId == tuple.Item2);
+                if (ba != null)
+                {
+                    ba.Book = books.FirstOrDefault(b => b.Id == ba.BookId);
+                    ba.Author = authors.FirstOrDefault(a => a.Id == ba.AuthorId);
+                }
+                return ba;
+            }
             return null;
         }
         public async Task<IEnumerable<BookAuthor>> GetByNameAsync(string name) => await GetByBookNameAsync(name);
         public async Task<IEnumerable<BookAuthor>> GetByBookNameAsync(string bookName)
         {
-            var bas = await LoadAsync();
-            var books = await LoadBooksAsync();
-            return bas.Where(ba => books.Any(b => (b.Id == ba.BookId) && ((b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(bookName.ToLower())) || (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(bookName.ToLower())))));
+            var bas = (await LoadAsync()).ToList();
+            var books = (await LoadBooksAsync()).ToList();
+            var authors = (await LoadAuthorsAsync()).ToList();
+            foreach (var ba in bas)
+            {
+                ba.Book = books.FirstOrDefault(b => b.Id == ba.BookId);
+                ba.Author = authors.FirstOrDefault(a => a.Id == ba.AuthorId);
+            }
+            return bas.Where(ba => ba.Book != null && ((ba.Book.OriginalTitle != null && ba.Book.OriginalTitle.ToLower().Contains(bookName.ToLower())) || (ba.Book.EnglishTitle != null && ba.Book.EnglishTitle.ToLower().Contains(bookName.ToLower()))));
         }
         public async Task<IEnumerable<BookAuthor>> GetByAuthorNameAsync(string authorName)
         {
-            var bas = await LoadAsync();
-            var authors = await LoadAuthorsAsync();
-            return bas.Where(ba => authors.Any(a => a.Id == ba.AuthorId && a.Name != null && a.Name.ToLower().Contains(authorName.ToLower())));
+            var bas = (await LoadAsync()).ToList();
+            var books = (await LoadBooksAsync()).ToList();
+            var authors = (await LoadAuthorsAsync()).ToList();
+            foreach (var ba in bas)
+            {
+                ba.Book = books.FirstOrDefault(b => b.Id == ba.BookId);
+                ba.Author = authors.FirstOrDefault(a => a.Id == ba.AuthorId);
+            }
+            return bas.Where(ba => ba.Author != null && ba.Author.Name != null && ba.Author.Name.ToLower().Contains(authorName.ToLower()));
         }
         public async Task<BookAuthor> InsertAsync(BookAuthor entity)
         {

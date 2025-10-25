@@ -1,4 +1,1 @@
-[
-  { "Id": 1, "OriginalTitle": "Cien años de soledad", "EnglishTitle": "One Hundred Years of Solitude", "Edition": "First" },
-  { "Id": 2, "OriginalTitle": "Harry Potter y la piedra filosofal", "EnglishTitle": "Harry Potter and the Philosopher's Stone", "Edition": "First" }
-]
+[{"Id":1,"OriginalTitle":"Cien a\u00F1os de soledad","EnglishTitle":"One Hundred Years of Solitude","Edition":"First","BookCopies":[],"Authors":[],"Themes":[]},{"Id":2,"OriginalTitle":"Harry Potter y la piedra filosofal","EnglishTitle":"Harry Potter and the Philosopher\u0027s Stone","Edition":"First","BookCopies":[],"Authors":[],"Themes":[]},{"Id":3,"OriginalTitle":"El coronel no tiene qui\u00E9n le escriba","EnglishTitle":"The colonel doesn\u0027t have someone who writes to","Edition":"First","BookCopies":[],"Authors":[],"Themes":[]}]

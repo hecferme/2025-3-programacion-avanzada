@@ -11,9 +11,9 @@ namespace ProgramacionAvanzada.Books.Repositories
         private readonly BooksDbContext _context;
         public EfAuthorRepository(BooksDbContext context) => _context = context;
 
-        public async Task<Author?> GetByPrimaryKeyAsync(object key) => await _context.Authors.FindAsync(key);
-        public async Task<IEnumerable<Author>> GetByNameAsync(string name) => await _context.Authors.Where(a => a.Name != null && a.Name.ToLower().Contains(name.ToLower())).ToListAsync();
-        public async Task<IEnumerable<Author>> GetByCountryAsync(string country) => await _context.Authors.Where(a => a.Country != null && a.Country.ToLower().Contains(country.ToLower())).ToListAsync();
+        public async Task<Author?> GetByPrimaryKeyAsync(object key) => await _context.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id.Equals(key));
+        public async Task<IEnumerable<Author>> GetByNameAsync(string name) => await _context.Authors.Include(a => a.Books).Where(a => a.Name != null && a.Name.ToLower().Contains(name.ToLower())).ToListAsync();
+        public async Task<IEnumerable<Author>> GetByCountryAsync(string country) => await _context.Authors.Include(a => a.Books).Where(a => a.Country != null && a.Country.ToLower().Contains(country.ToLower())).ToListAsync();
 
         public async Task<Author> InsertAsync(Author entity)
         {

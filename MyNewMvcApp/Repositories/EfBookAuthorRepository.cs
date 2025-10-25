@@ -14,12 +14,29 @@ namespace ProgramacionAvanzada.Books.Repositories
         public async Task<BookAuthor?> GetByPrimaryKeyAsync(object key)
         {
             if (key is ValueTuple<int, int> tuple)
-                return await _context.Set<BookAuthor>().FindAsync(tuple.Item1, tuple.Item2);
+                return await _context.Set<BookAuthor>()
+                    .Include(ba => ba.Book)
+                    .Include(ba => ba.Author)
+                    .FirstOrDefaultAsync(ba => ba.BookId == tuple.Item1 && ba.AuthorId == tuple.Item2);
             return null;
         }
         public async Task<IEnumerable<BookAuthor>> GetByNameAsync(string name) => await GetByBookNameAsync(name);
-        public async Task<IEnumerable<BookAuthor>> GetByBookNameAsync(string bookName) => await _context.Set<BookAuthor>().Include(ba => ba.Book).Where(ba => (ba.Book.OriginalTitle != null && ba.Book.OriginalTitle.ToLower().Contains(bookName.ToLower())) || (ba.Book.EnglishTitle != null && ba.Book.EnglishTitle.ToLower().Contains(bookName.ToLower()))).ToListAsync();
-        public async Task<IEnumerable<BookAuthor>> GetByAuthorNameAsync(string authorName) => await _context.Set<BookAuthor>().Include(ba => ba.Author).Where(ba => ba.Author.Name != null && ba.Author.Name.ToLower().Contains(authorName.ToLower())).ToListAsync();
+        public async Task<IEnumerable<BookAuthor>> GetByBookNameAsync(string bookName)
+        {
+            return await _context.Set<BookAuthor>()
+                .Include(ba => ba.Book)
+                .Include(ba => ba.Author)
+                .Where(ba => (ba.Book.OriginalTitle != null && ba.Book.OriginalTitle.ToLower().Contains(bookName.ToLower())) || (ba.Book.EnglishTitle != null && ba.Book.EnglishTitle.ToLower().Contains(bookName.ToLower())))
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<BookAuthor>> GetByAuthorNameAsync(string authorName)
+        {
+            return await _context.Set<BookAuthor>()
+                .Include(ba => ba.Book)
+                .Include(ba => ba.Author)
+                .Where(ba => ba.Author.Name != null && ba.Author.Name.ToLower().Contains(authorName.ToLower()))
+                .ToListAsync();
+        }
 
         public async Task<BookAuthor> InsertAsync(BookAuthor entity)
         {

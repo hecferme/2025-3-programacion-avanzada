@@ -10,11 +10,31 @@ namespace ProgramacionAvanzada.Books.Repositories
     public class JsonAuthorRepository : IAuthorRepository
     {
         private readonly string _jsonFilePath;
-        public JsonAuthorRepository(string filePath) { _jsonFilePath = filePath; }
+        private readonly string _booksFilePath;
+        private readonly string _bookAuthorsFilePath;
+        public JsonAuthorRepository(string filePath)
+        {
+            _jsonFilePath = filePath;
+            var dir = Directory.GetParent(_jsonFilePath)!.FullName;
+            _booksFilePath = Path.Combine(dir, "books.json");
+            _bookAuthorsFilePath = Path.Combine(dir, "bookauthors.json");
+        }
         private async Task<List<Author>> LoadAsync() => JsonSerializer.Deserialize<List<Author>>(await File.ReadAllTextAsync(_jsonFilePath)) ?? new();
-        public async Task<Author?> GetByPrimaryKeyAsync(object key) => (await LoadAsync()).FirstOrDefault(a => a.Id.Equals(key));
-        public async Task<IEnumerable<Author>> GetByNameAsync(string name) => (await LoadAsync()).Where(a => a.Name != null && a.Name.ToLower().Contains(name.ToLower()));
-        public async Task<IEnumerable<Author>> GetByCountryAsync(string country) => (await LoadAsync()).Where(a => a.Country != null && a.Country.ToLower().Contains(country.ToLower()));
+        private async Task<List<Author>> LoadWithBooksAsync()
+        {
+            var authors = await LoadAsync();
+            var books = JsonSerializer.Deserialize<List<Book>>(await File.ReadAllTextAsync(_booksFilePath)) ?? new();
+            var bookAuthors = JsonSerializer.Deserialize<List<BookAuthor>>(await File.ReadAllTextAsync(_bookAuthorsFilePath)) ?? new();
+            foreach (var author in authors)
+            {
+                var bookIds = bookAuthors.Where(ba => ba.AuthorId == author.Id).Select(ba => ba.BookId).ToList();
+                author.Books = books.Where(b => bookIds.Contains(b.Id)).ToList();
+            }
+            return authors;
+        }
+        public async Task<Author?> GetByPrimaryKeyAsync(object key) => (await LoadWithBooksAsync()).FirstOrDefault(a => a.Id.Equals(key));
+        public async Task<IEnumerable<Author>> GetByNameAsync(string name) => (await LoadWithBooksAsync()).Where(a => a.Name != null && a.Name.ToLower().Contains(name.ToLower()));
+        public async Task<IEnumerable<Author>> GetByCountryAsync(string country) => (await LoadWithBooksAsync()).Where(a => a.Country != null && a.Country.ToLower().Contains(country.ToLower()));
         public async Task<Author> InsertAsync(Author entity)
         {
             var list = (await LoadAsync()).ToList();

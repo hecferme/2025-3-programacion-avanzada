@@ -1,4 +1,1 @@
-[
-  { "BookId": 1, "AuthorId": 1 },
-  { "BookId": 2, "AuthorId": 2 }
-]
+[{"BookId":1,"AuthorId":1,"Book":null,"Author":null},{"BookId":2,"AuthorId":2,"Book":null,"Author":null},{"BookId":3,"AuthorId":1,"Book":null,"Author":null}]

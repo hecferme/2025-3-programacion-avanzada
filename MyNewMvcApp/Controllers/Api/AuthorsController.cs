@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProgramacionAvanzada.Books.Model;
 using ProgramacionAvanzada.Books.Repositories;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MyNewMvcApp.Controllers.Api
 {
@@ -15,9 +17,25 @@ namespace MyNewMvcApp.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? name, [FromQuery] string? country)
         {
-            if (!string.IsNullOrWhiteSpace(country)) return Ok(await _repo.GetByCountryAsync(country));
-            if (!string.IsNullOrWhiteSpace(name)) return Ok(await _repo.GetByNameAsync(name));
-            return Ok(await _repo.GetByNameAsync(""));
+            var result = new List<object>();
+            IEnumerable<Author> entities;
+            if (!string.IsNullOrWhiteSpace(country))
+                entities = await _repo.GetByCountryAsync(country);
+            else if (!string.IsNullOrWhiteSpace(name))
+                entities = await _repo.GetByNameAsync(name);
+            else
+                entities = await _repo.GetByNameAsync("");
+
+            foreach (var author in entities)
+            {
+                result.Add(new {
+                    author.Id,
+                    author.Name,
+                    author.Country,
+                    Books = author.Books?.Select(b => b.OriginalTitle ?? b.EnglishTitle).ToList() ?? new List<string?>()
+                });
+            }
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
