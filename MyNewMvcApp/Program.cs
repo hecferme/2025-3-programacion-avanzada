@@ -5,7 +5,11 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -16,7 +20,7 @@ builder.Services.AddSwaggerGen(c =>
 // you can register the Json*Repository implementations instead. The Data folder
 // contains JSON test files (authors.json, books.json, themes.json, bookauthors.json, bookthemes.json).
 var useJson = builder.Configuration.GetValue<bool>("UseJsonSources");
-var conn = builder.Configuration.GetConnectionString("user00");
+var conn = builder.Configuration.GetConnectionString("MyDb");
 
 if (useJson)
 {
@@ -31,8 +35,9 @@ if (useJson)
 }
 else if (!string.IsNullOrWhiteSpace(conn))
 {
-    // Register the DbContext - provider configuration is left to the environment
-    builder.Services.AddDbContext<ProgramacionAvanzada.Books.Model.BooksDbContext>();
+    // Register the DbContext with MySQL provider
+    builder.Services.AddDbContext<ProgramacionAvanzada.Books.Model.BooksDbContext>(options =>
+        options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
     // Register EF repositories
     builder.Services.AddScoped<ProgramacionAvanzada.Books.Repositories.IAuthorRepository, ProgramacionAvanzada.Books.Repositories.EfAuthorRepository>();

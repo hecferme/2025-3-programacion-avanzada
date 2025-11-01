@@ -23,6 +23,10 @@ public partial class BooksDbContext : DbContext
 
     public virtual DbSet<Theme> Themes { get; set; }
 
+    public virtual DbSet<BookAuthor> BookAuthors { get; set; }
+
+    public virtual DbSet<BookTheme> BookThemes { get; set; }
+
     // demo/system table `xyz` excluded from the model
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,44 +52,16 @@ public partial class BooksDbContext : DbContext
             entity.Property(e => e.OriginalTitle).HasMaxLength(255);
 
             entity.HasMany(d => d.Authors).WithMany(p => p.Books)
-                .UsingEntity<Dictionary<string, object>>(
-                    "bookauthor",
-                    r => r.HasOne<Author>().WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("bookauthors_ibfk_2"),
-                    l => l.HasOne<Book>().WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("bookauthors_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("BookId", "AuthorId")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("bookauthors");
-                        j.HasIndex(new[] { "AuthorId" }, "AuthorId");
-                    });
+                .UsingEntity<BookAuthor>(
+                    j => j.HasOne(ba => ba.Author).WithMany().HasForeignKey(ba => ba.AuthorId),
+                    j => j.HasOne(ba => ba.Book).WithMany().HasForeignKey(ba => ba.BookId)
+                );
 
             entity.HasMany(d => d.Themes).WithMany(p => p.Books)
-                .UsingEntity<Dictionary<string, object>>(
-                    "booktheme",
-                    r => r.HasOne<Theme>().WithMany()
-                        .HasForeignKey("ThemeId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("bookthemes_ibfk_2"),
-                    l => l.HasOne<Book>().WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("bookthemes_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("BookId", "ThemeId")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("bookthemes");
-                        j.HasIndex(new[] { "ThemeId" }, "ThemeId");
-                    });
+                .UsingEntity<BookTheme>(
+                    j => j.HasOne(bt => bt.Theme).WithMany().HasForeignKey(bt => bt.ThemeId),
+                    j => j.HasOne(bt => bt.Book).WithMany().HasForeignKey(bt => bt.BookId)
+                );
         });
 
     modelBuilder.Entity<BookCopy>(entity =>
@@ -137,12 +113,48 @@ public partial class BooksDbContext : DbContext
                 .IsFixedLength();
         });
 
-    modelBuilder.Entity<Theme>(entity =>
+        modelBuilder.Entity<Theme>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.Property(e => e.Subject).HasMaxLength(255);
             entity.Property(e => e.ThemeName).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<BookAuthor>(entity =>
+        {
+            entity.HasKey(e => new { e.BookId, e.AuthorId }).HasName("PRIMARY");
+            entity.ToTable("bookauthors");
+
+            entity.HasOne(d => d.Book)
+                .WithMany()
+                .HasForeignKey(d => d.BookId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bookauthors_ibfk_1");
+
+            entity.HasOne(d => d.Author)
+                .WithMany()
+                .HasForeignKey(d => d.AuthorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bookauthors_ibfk_2");
+        });
+
+        modelBuilder.Entity<BookTheme>(entity =>
+        {
+            entity.HasKey(e => new { e.BookId, e.ThemeId }).HasName("PRIMARY");
+            entity.ToTable("bookthemes");
+
+            entity.HasOne(d => d.Book)
+                .WithMany()
+                .HasForeignKey(d => d.BookId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bookthemes_ibfk_1");
+
+            entity.HasOne(d => d.Theme)
+                .WithMany()
+                .HasForeignKey(d => d.ThemeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("bookthemes_ibfk_2");
         });
 
         // xyz table removed from model - demo data only

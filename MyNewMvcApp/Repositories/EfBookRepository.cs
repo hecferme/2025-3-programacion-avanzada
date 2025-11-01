@@ -11,10 +11,40 @@ namespace ProgramacionAvanzada.Books.Repositories
         private readonly BooksDbContext _context;
         public EfBookRepository(BooksDbContext context) => _context = context;
 
-        public async Task<Book?> GetByPrimaryKeyAsync(object key) => await _context.Books.FindAsync(key);
-        public async Task<IEnumerable<Book>> GetByNameAsync(string name) => await _context.Books.Where(b => (b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(name.ToLower())) || (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower()))).ToListAsync();
-        public async Task<IEnumerable<Book>> GetByOriginalTitleAsync(string originalTitle) => await _context.Books.Where(b => b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(originalTitle.ToLower())).ToListAsync();
-        public async Task<IEnumerable<Book>> GetByEnglishTitleAsync(string englishTitle) => await _context.Books.Where(b => b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(englishTitle.ToLower())).ToListAsync();
+        public async Task<Book?> GetByPrimaryKeyAsync(object key)
+        {
+            var id = Convert.ToInt32(key);
+            return await _context.Books
+                .Include(b => b.BookCopies)
+                .Include(b => b.Authors)
+                .Include(b => b.Themes)
+                .FirstOrDefaultAsync(b => b.Id == id);
+        }
+
+        public async Task<IEnumerable<Book>> GetByNameAsync(string name) =>
+            await _context.Books
+                .Include(b => b.BookCopies)
+                .Include(b => b.Authors)
+                .Include(b => b.Themes)
+                .Where(b => (b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(name.ToLower())) ||
+                           (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower())))
+                .ToListAsync();
+
+        public async Task<IEnumerable<Book>> GetByOriginalTitleAsync(string originalTitle) =>
+            await _context.Books
+                .Include(b => b.BookCopies)
+                .Include(b => b.Authors)
+                .Include(b => b.Themes)
+                .Where(b => b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(originalTitle.ToLower()))
+                .ToListAsync();
+
+        public async Task<IEnumerable<Book>> GetByEnglishTitleAsync(string englishTitle) =>
+            await _context.Books
+                .Include(b => b.BookCopies)
+                .Include(b => b.Authors)
+                .Include(b => b.Themes)
+                .Where(b => b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(englishTitle.ToLower()))
+                .ToListAsync();
 
         public async Task<Book> InsertAsync(Book entity)
         {
