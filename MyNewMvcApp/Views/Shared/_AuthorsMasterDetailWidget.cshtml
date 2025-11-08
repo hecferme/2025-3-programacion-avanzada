@@ -1,0 +1,23 @@
+@* Reusable widget that will be included in layout and in a full page view *@
+<div id="authors-master-detail" class="card mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="input-group mb-2">
+                    <input id="amd-search-input" class="form-control" placeholder="Search authors by name..." />
+                    <button id="amd-search-btn" class="btn btn-outline-secondary">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5" id="amd-master-col">
+                <div id="amd-master-placeholder">Search to see authors...</div>
+            </div>
+            <div class="col-md-7" id="amd-detail-col">
+                <div id="amd-detail-placeholder">Select an author to see books.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/authors-master-detail.js"></script>

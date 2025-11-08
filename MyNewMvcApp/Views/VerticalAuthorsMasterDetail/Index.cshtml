@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Authors Master-Detail (Vertical)";
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="mb-3">
+            <div class="input-group">
+                <input id="vamd-search-input" class="form-control" placeholder="Search authors by name..." />
+                <button id="vamd-search-btn" class="btn btn-outline-secondary">Search</button>
+            </div>
+        </div>
+
+        <div id="vamd-master-placeholder" class="mb-3">Search to see authors...</div>
+        <hr />
+        <div id="vamd-detail-placeholder">Select an author to see books.</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/authors-master-detail-vertical.js" asp-append-version="true"></script>
+}

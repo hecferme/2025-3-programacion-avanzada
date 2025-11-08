@@ -1,0 +1,9 @@
+@{
+    ViewData["Title"] = "Authors Master-Detail";
+}
+
+@await Html.PartialAsync("~/Views/Shared/_AuthorsMasterDetailWidget.cshtml")
+
+@section Scripts {
+    <script src="~/js/authors-master-detail.js" asp-append-version="true"></script>
+}

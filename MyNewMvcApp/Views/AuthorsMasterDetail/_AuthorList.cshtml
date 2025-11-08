@@ -1,0 +1,13 @@
+@model IEnumerable<ProgramacionAvanzada.Books.Model.Author>
+
+<div class="list-group" id="amd-author-list">
+@foreach (var a in Model)
+{
+    <a href="#" class="list-group-item list-group-item-action amd-author-item" data-id="@a.Id">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">@a.Name</h5>
+            <small class="text-muted">@a.Country</small>
+        </div>
+    </a>
+}
+</div>

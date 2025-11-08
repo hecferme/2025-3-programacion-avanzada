@@ -1,0 +1,18 @@
+@model ProgramacionAvanzada.Books.Model.Author
+
+<div id="amd-author-books">
+    <h4>@Model.Name - Books</h4>
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        <ul class="list-group">
+        @foreach (var b in Model.Books)
+        {
+            <li class="list-group-item">@((b.OriginalTitle != null) ? b.OriginalTitle : b.EnglishTitle)</li>
+        }
+        </ul>
+    }
+    else
+    {
+        <div class="text-muted">No books available for this author.</div>
+    }
+</div>
