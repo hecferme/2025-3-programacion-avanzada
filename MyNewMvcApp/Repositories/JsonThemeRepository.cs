@@ -14,6 +14,13 @@ namespace ProgramacionAvanzada.Books.Repositories
         private async Task<List<Theme>> LoadAsync() => JsonSerializer.Deserialize<List<Theme>>(await File.ReadAllTextAsync(_jsonFilePath)) ?? new();
         public async Task<Theme?> GetByPrimaryKeyAsync(object key) => (await LoadAsync()).FirstOrDefault(t => t.Id.Equals(key));
         public async Task<IEnumerable<Theme>> GetByNameAsync(string name) => (await LoadAsync()).Where(t => t.ThemeName != null && t.ThemeName.ToLower().Contains(name.ToLower()));
+        public async Task<(IEnumerable<Theme> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var allThemes = (await LoadAsync()).Where(t => t.ThemeName != null && t.ThemeName.ToLower().Contains(name.ToLower())).ToList();
+            var totalCount = allThemes.Count;
+            var items = allThemes.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            return (items, totalCount);
+        }
         public async Task<IEnumerable<Theme>> GetBySubjectAsync(string subject) => (await LoadAsync()).Where(t => t.Subject != null && t.Subject.ToLower().Contains(subject.ToLower()));
         public async Task<Theme> InsertAsync(Theme entity)
         {

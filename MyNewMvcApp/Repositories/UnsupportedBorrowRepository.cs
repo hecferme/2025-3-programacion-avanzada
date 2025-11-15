@@ -9,6 +9,7 @@ namespace ProgramacionAvanzada.Books.Repositories
     {
         public Task<Borrow?> GetByPrimaryKeyAsync(object key) => throw new System.NotSupportedException("Borrow repository not available in JSON-only mode.");
         public Task<IEnumerable<Borrow>> GetByNameAsync(string name) => throw new System.NotSupportedException("Borrow repository not available in JSON-only mode.");
+        public Task<(IEnumerable<Borrow> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize) => throw new System.NotSupportedException("Borrow repository not available in JSON-only mode.");
         public Task<IEnumerable<Borrow>> GetByPersonIdAsync(int personId) => throw new System.NotSupportedException("Borrow repository not available in JSON-only mode.");
         public Task<IEnumerable<Borrow>> GetByBookCopyIdAsync(int bookCopyId) => throw new System.NotSupportedException("Borrow repository not available in JSON-only mode.");
         public Task<Borrow> InsertAsync(Borrow entity) => throw new System.NotSupportedException("Borrow repository not available in JSON-only mode.");

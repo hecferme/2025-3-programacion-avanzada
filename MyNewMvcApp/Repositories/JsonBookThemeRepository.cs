@@ -23,6 +23,15 @@ namespace ProgramacionAvanzada.Books.Repositories
             return null;
         }
         public async Task<IEnumerable<BookTheme>> GetByNameAsync(string name) => await GetByBookNameAsync(name);
+        public async Task<(IEnumerable<BookTheme> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var bts = await LoadAsync();
+            var books = await LoadBooksAsync();
+            var filtered = bts.Where(bt => books.Any(b => (b.Id == bt.BookId) && ((b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(name.ToLower())) || (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower()))))).ToList();
+            var totalCount = filtered.Count;
+            var items = filtered.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            return (items, totalCount);
+        }
         public async Task<IEnumerable<BookTheme>> GetByBookNameAsync(string bookName)
         {
             var bts = await LoadAsync();

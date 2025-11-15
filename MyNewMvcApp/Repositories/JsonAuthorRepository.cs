@@ -34,6 +34,13 @@ namespace ProgramacionAvanzada.Books.Repositories
         }
         public async Task<Author?> GetByPrimaryKeyAsync(object key) => (await LoadWithBooksAsync()).FirstOrDefault(a => a.Id.Equals(key));
         public async Task<IEnumerable<Author>> GetByNameAsync(string name) => (await LoadWithBooksAsync()).Where(a => a.Name != null && a.Name.ToLower().Contains(name.ToLower()));
+        public async Task<(IEnumerable<Author> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var allAuthors = (await LoadWithBooksAsync()).Where(a => a.Name != null && a.Name.ToLower().Contains(name.ToLower())).ToList();
+            var totalCount = allAuthors.Count;
+            var items = allAuthors.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            return (items, totalCount);
+        }
         public async Task<IEnumerable<Author>> GetByCountryAsync(string country) => (await LoadWithBooksAsync()).Where(a => a.Country != null && a.Country.ToLower().Contains(country.ToLower()));
         public async Task<Author> InsertAsync(Author entity)
         {

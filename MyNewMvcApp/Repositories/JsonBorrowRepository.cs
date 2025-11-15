@@ -43,6 +43,17 @@ namespace ProgramacionAvanzada.Books.Repositories
             return borrows.Where(b => personIds.Contains(b.PersonId));
         }
 
+        public async Task<(IEnumerable<Borrow> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var persons = await LoadPersonsAsync();
+            if (persons.Count == 0) return (Enumerable.Empty<Borrow>(), 0);
+            var personIds = persons.Where(p => p.Name != null && p.Name.ToLower().Contains(name.ToLower())).Select(p => p.Id).ToHashSet();
+            var borrows = (await LoadAsync()).Where(b => personIds.Contains(b.PersonId)).ToList();
+            var totalCount = borrows.Count;
+            var items = borrows.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            return (items, totalCount);
+        }
+
         public async Task<IEnumerable<Borrow>> GetByPersonIdAsync(int personId)
         {
             var borrows = await LoadAsync();

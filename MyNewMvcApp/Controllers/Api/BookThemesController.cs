@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProgramacionAvanzada.Books.Model;
 using ProgramacionAvanzada.Books.Repositories;
 using System.Threading.Tasks;
+using System;
 
 namespace MyNewMvcApp.Controllers.Api
 {
@@ -11,6 +12,22 @@ namespace MyNewMvcApp.Controllers.Api
     {
         private readonly IBookThemeRepository _repo;
         public BookThemesController(IBookThemeRepository repo) => _repo = repo;
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] string? name, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
+            var (items, totalCount) = await _repo.GetPagedAsync(name ?? "", pageNumber, pageSize);
+            return Ok(new {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
+        }
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? bookName, [FromQuery] string? themeName, [FromQuery] string? subjectName)

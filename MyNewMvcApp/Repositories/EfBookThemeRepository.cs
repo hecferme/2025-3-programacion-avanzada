@@ -18,6 +18,13 @@ namespace ProgramacionAvanzada.Books.Repositories
             return null;
         }
         public async Task<IEnumerable<BookTheme>> GetByNameAsync(string name) => await GetByBookNameAsync(name);
+        public async Task<(IEnumerable<BookTheme> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var query = _context.Set<BookTheme>().Include(bt => bt.Book).Where(bt => (bt.Book.OriginalTitle != null && bt.Book.OriginalTitle.ToLower().Contains(name.ToLower())) || (bt.Book.EnglishTitle != null && bt.Book.EnglishTitle.ToLower().Contains(name.ToLower())));
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, totalCount);
+        }
         public async Task<IEnumerable<BookTheme>> GetByBookNameAsync(string bookName) => await _context.Set<BookTheme>().Include(bt => bt.Book).Where(bt => (bt.Book.OriginalTitle != null && bt.Book.OriginalTitle.ToLower().Contains(bookName.ToLower())) || (bt.Book.EnglishTitle != null && bt.Book.EnglishTitle.ToLower().Contains(bookName.ToLower()))).ToListAsync();
         public async Task<IEnumerable<BookTheme>> GetByThemeNameAsync(string themeName) => await _context.Set<BookTheme>().Include(bt => bt.Theme).Where(bt => bt.Theme.ThemeName != null && bt.Theme.ThemeName.ToLower().Contains(themeName.ToLower())).ToListAsync();
         public async Task<IEnumerable<BookTheme>> GetBySubjectNameAsync(string subjectName) => await _context.Set<BookTheme>().Include(bt => bt.Theme).Where(bt => bt.Theme.Subject != null && bt.Theme.Subject.ToLower().Contains(subjectName.ToLower())).ToListAsync();

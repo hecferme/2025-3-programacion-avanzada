@@ -30,6 +30,19 @@ namespace ProgramacionAvanzada.Books.Repositories
                            (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower())))
                 .ToListAsync();
 
+        public async Task<(IEnumerable<Book> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var query = _context.Books
+                .Include(b => b.BookCopies)
+                .Include(b => b.Authors)
+                .Include(b => b.Themes)
+                .Where(b => (b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(name.ToLower())) ||
+                           (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower())));
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, totalCount);
+        }
+
         public async Task<IEnumerable<Book>> GetByOriginalTitleAsync(string originalTitle) =>
             await _context.Books
                 .Include(b => b.BookCopies)

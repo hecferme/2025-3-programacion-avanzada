@@ -13,6 +13,13 @@ namespace ProgramacionAvanzada.Books.Repositories
 
         public async Task<Borrow?> GetByPrimaryKeyAsync(object key) => await _context.Borrows.FindAsync(key);
         public async Task<IEnumerable<Borrow>> GetByNameAsync(string name) => await _context.Borrows.Include(b => b.Person).Include(b => b.BookCopy).Where(b => b.Person.Name != null && b.Person.Name.ToLower().Contains(name.ToLower())).ToListAsync();
+        public async Task<(IEnumerable<Borrow> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var query = _context.Borrows.Include(b => b.Person).Include(b => b.BookCopy).Where(b => b.Person.Name != null && b.Person.Name.ToLower().Contains(name.ToLower()));
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, totalCount);
+        }
         public async Task<IEnumerable<Borrow>> GetByPersonIdAsync(int personId) => await _context.Borrows.Where(b => b.PersonId == personId).ToListAsync();
         public async Task<IEnumerable<Borrow>> GetByBookCopyIdAsync(int bookCopyId) => await _context.Borrows.Where(b => b.BookCopyId == bookCopyId).ToListAsync();
 

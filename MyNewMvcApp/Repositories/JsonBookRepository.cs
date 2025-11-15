@@ -101,6 +101,17 @@ namespace ProgramacionAvanzada.Books.Repositories
             return books;
         }
 
+        public async Task<(IEnumerable<Book> Items, int TotalCount)> GetPagedAsync(string name, int pageNumber, int pageSize)
+        {
+            var allBooks = (await LoadAsync()).Where(b =>
+                (b.OriginalTitle != null && b.OriginalTitle.ToLower().Contains(name.ToLower())) ||
+                (b.EnglishTitle != null && b.EnglishTitle.ToLower().Contains(name.ToLower()))).ToList();
+            var totalCount = allBooks.Count;
+            var pagedBooks = allBooks.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            await PopulateNavigationPropertiesAsync(pagedBooks);
+            return (pagedBooks, totalCount);
+        }
+
         public async Task<IEnumerable<Book>> GetByOriginalTitleAsync(string originalTitle)
         {
             var books = (await LoadAsync()).Where(b =>

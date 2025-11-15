@@ -15,6 +15,33 @@ namespace MyNewMvcApp.Controllers.Api
         private readonly IBookAuthorRepository _repo;
         public BookAuthorsController(IBookAuthorRepository repo) => _repo = repo;
 
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] string? name, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
+            var (items, totalCount) = await _repo.GetPagedAsync(name ?? "", pageNumber, pageSize);
+            var result = new List<object>();
+            foreach (var ba in items)
+            {
+                result.Add(new {
+                    ba.BookId,
+                    ba.AuthorId,
+                    BookName = ba.Book?.OriginalTitle ?? ba.Book?.EnglishTitle,
+                    AuthorName = ba.Author?.Name
+                });
+            }
+
+            return Ok(new {
+                Items = result,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string? bookName, [FromQuery] string? authorName)
         {
