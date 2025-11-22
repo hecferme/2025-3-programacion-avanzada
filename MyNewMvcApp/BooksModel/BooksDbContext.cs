@@ -72,6 +72,7 @@ public partial class BooksDbContext : DbContext
 
             entity.Property(e => e.ISBN).HasMaxLength(20);
             entity.Property(e => e.IsLost).HasDefaultValueSql("'0'");
+            entity.Property(e => e.LostDate).HasColumnType("datetime");
             entity.Property(e => e.Language).HasMaxLength(50);
             entity.Property(e => e.Provider).HasMaxLength(100);
             entity.Property(e => e.Serial).HasMaxLength(100);

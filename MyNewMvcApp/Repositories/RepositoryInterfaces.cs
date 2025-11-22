@@ -42,5 +42,7 @@ namespace ProgramacionAvanzada.Books.Repositories
         Task<IEnumerable<BookCopy>> GetByIsLostAsync(bool isLost);
         Task<int> GetTotalCountAsync();
         Task<int> GetLostCountAsync();
+        Task<int> GetLostBooksByHourForTodayAsync(int hour);
+        Task<int[]> GetLostBooksHourlyDataForTodayAsync();
     }
 }

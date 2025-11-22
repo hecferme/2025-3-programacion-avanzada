@@ -118,5 +118,26 @@ namespace MyNewMvcApp.Controllers.Api
                 availableCopies = totalCount - lostCount
             });
         }
+
+        // GET: api/BookCopies/lost-by-hour/14
+        [HttpGet("lost-by-hour/{hour}")]
+        public async Task<ActionResult<object>> GetLostBooksByHour(int hour)
+        {
+            if (hour < 0 || hour > 23)
+            {
+                return BadRequest("Hour must be between 0 and 23.");
+            }
+
+            var count = await _repository.GetLostBooksByHourForTodayAsync(hour);
+            return Ok(new { hour, count });
+        }
+
+        // GET: api/BookCopies/lost-hourly-today
+        [HttpGet("lost-hourly-today")]
+        public async Task<ActionResult<int[]>> GetLostBooksHourlyToday()
+        {
+            var hourlyData = await _repository.GetLostBooksHourlyDataForTodayAsync();
+            return Ok(hourlyData);
+        }
     }
 }

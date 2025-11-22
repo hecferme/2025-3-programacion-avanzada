@@ -41,11 +41,135 @@
         <strong>Real-time Updates:</strong> This page updates automatically when book copies are added, modified, or removed.
         <span id="connectionStatus" class="badge bg-secondary">Connecting...</span>
     </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Lost Books by Hour - Today (<span id="currentDate"></span>)</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="lostBooksChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+        // Set current date
+        document.getElementById("currentDate").innerText = new Date().toLocaleDateString();
+
+        // Initialize Chart.js
+        let lostBooksChart = null;
+        const ctx = document.getElementById('lostBooksChart').getContext('2d');
+        const currentHour = new Date().getHours();
+
+        async function loadChartData() {
+            try {
+                const response = await fetch('/api/BookCopies/lost-hourly-today');
+                const hourlyData = await response.json();
+                initializeChart(hourlyData);
+            } catch (error) {
+                console.error('Error loading chart data:', error);
+            }
+        }
+
+        function initializeChart(data) {
+            const labels = Array.from({ length: 24 }, (_, i) => i + ':00');
+            
+            // Create background colors - highlight current hour
+            const backgroundColors = Array.from({ length: 24 }, (_, i) => 
+                i === currentHour ? 'rgba(255, 99, 132, 0.8)' : 'rgba(54, 162, 235, 0.6)'
+            );
+
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Lost Books',
+                        data: data,
+                        borderColor: 'rgb(220, 53, 69)',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: backgroundColors,
+                        pointBorderColor: backgroundColors,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const hour = context[0].label;
+                                    const isCurrent = context[0].dataIndex === currentHour;
+                                    return hour + (isCurrent ? ' (Current Hour)' : '');
+                                },
+                                label: function(context) {
+                                    return 'Lost Books: ' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Lost Books'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hour of Day'
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (lostBooksChart) {
+                lostBooksChart.destroy();
+            }
+            lostBooksChart = new Chart(ctx, chartConfig);
+        }
+
+        function updateChart(data) {
+            if (lostBooksChart) {
+                lostBooksChart.data.datasets[0].data = data;
+                
+                // Update point colors to highlight current hour
+                const backgroundColors = Array.from({ length: 24 }, (_, i) => 
+                    i === currentHour ? 'rgba(255, 99, 132, 0.8)' : 'rgba(54, 162, 235, 0.6)'
+                );
+                lostBooksChart.data.datasets[0].pointBackgroundColor = backgroundColors;
+                lostBooksChart.data.datasets[0].pointBorderColor = backgroundColors;
+                
+                lostBooksChart.update('active');
+            }
+        }
+
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/bookCopiesStatsHub")
             .withAutomaticReconnect()
@@ -61,6 +185,11 @@
             
             // Add a visual feedback
             flashCards();
+        });
+
+        connection.on("ReceiveHourlyChartUpdate", function (hourlyData) {
+            console.log("Hourly chart update received:", hourlyData);
+            updateChart(hourlyData);
         });
 
         connection.onreconnecting(() => {
@@ -83,6 +212,9 @@
                 console.log("SignalR Connected");
                 document.getElementById("connectionStatus").className = "badge bg-success";
                 document.getElementById("connectionStatus").innerText = "Connected";
+                
+                // Load initial chart data
+                loadChartData();
             })
             .catch(err => {
                 console.error("SignalR Connection Error: ", err);

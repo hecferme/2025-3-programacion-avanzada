@@ -21,6 +21,8 @@ public partial class BookCopy
 
     public bool? IsLost { get; set; }
 
+    public DateTime? LostDate { get; set; }
+
     public virtual Book Book { get; set; } = null!;
 
     public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();

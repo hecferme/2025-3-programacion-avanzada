@@ -60,6 +60,21 @@ namespace ProgramacionAvanzada.Books.Repositories
 
         public async Task<BookCopy> UpdateAsync(BookCopy entity)
         {
+            // Track the original entity to check if IsLost status changed
+            var originalEntity = await _context.BookCopies.AsNoTracking()
+                .FirstOrDefaultAsync(bc => bc.Id == entity.Id);
+
+            // Set LostDate when IsLost changes from false to true
+            if (originalEntity != null && originalEntity.IsLost != true && entity.IsLost == true)
+            {
+                entity.LostDate = DateTime.Now;
+            }
+            // Clear LostDate when IsLost changes from true to false
+            else if (originalEntity != null && originalEntity.IsLost == true && entity.IsLost != true)
+            {
+                entity.LostDate = null;
+            }
+
             _context.BookCopies.Update(entity);
             await _context.SaveChangesAsync();
             await BroadcastStatsUpdate();
@@ -76,11 +91,48 @@ namespace ProgramacionAvanzada.Books.Repositories
             return true;
         }
 
+        public async Task<int> GetLostBooksByHourForTodayAsync(int hour)
+        {
+            var today = DateTime.Today;
+            var startOfHour = today.AddHours(hour);
+            var endOfHour = startOfHour.AddHours(1);
+
+            return await _context.BookCopies
+                .CountAsync(bc => bc.LostDate != null && 
+                                  bc.LostDate >= startOfHour && 
+                                  bc.LostDate < endOfHour);
+        }
+
+        public async Task<int[]> GetLostBooksHourlyDataForTodayAsync()
+        {
+            var today = DateTime.Today;
+            var hourlyCounts = new int[24];
+
+            // Get all books lost today
+            var lostBooksToday = await _context.BookCopies
+                .Where(bc => bc.LostDate != null && 
+                             bc.LostDate >= today && 
+                             bc.LostDate < today.AddDays(1))
+                .Select(bc => bc.LostDate!.Value)
+                .ToListAsync();
+
+            // Count books per hour
+            foreach (var lostDate in lostBooksToday)
+            {
+                hourlyCounts[lostDate.Hour]++;
+            }
+
+            return hourlyCounts;
+        }
+
         private async Task BroadcastStatsUpdate()
         {
             var totalCount = await GetTotalCountAsync();
             var lostCount = await GetLostCountAsync();
+            var hourlyData = await GetLostBooksHourlyDataForTodayAsync();
+            
             await _hubContext.Clients.All.SendAsync("ReceiveStatsUpdate", totalCount, lostCount);
+            await _hubContext.Clients.All.SendAsync("ReceiveHourlyChartUpdate", hourlyData);
         }
     }
 }
