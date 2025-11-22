@@ -35,4 +35,12 @@ namespace ProgramacionAvanzada.Books.Repositories
         Task<IEnumerable<BookTheme>> GetByThemeNameAsync(string themeName);
         Task<IEnumerable<BookTheme>> GetBySubjectNameAsync(string subjectName);
     }
+
+    public interface IBookCopyRepository : IRepository<BookCopy>
+    {
+        Task<IEnumerable<BookCopy>> GetAllAsync();
+        Task<IEnumerable<BookCopy>> GetByIsLostAsync(bool isLost);
+        Task<int> GetTotalCountAsync();
+        Task<int> GetLostCountAsync();
+    }
 }

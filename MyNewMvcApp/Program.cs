@@ -16,6 +16,9 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyNewMvcApp API", Version = "v1" });
 });
 
+// Add SignalR
+builder.Services.AddSignalR();
+
 // Repositories DI - prefer EF implementations; if you want to use JSON file-based repos
 // you can register the Json*Repository implementations instead. The Data folder
 // contains JSON test files (authors.json, books.json, themes.json, bookauthors.json, bookthemes.json).
@@ -47,6 +50,8 @@ else if (!string.IsNullOrWhiteSpace(conn))
     builder.Services.AddScoped<ProgramacionAvanzada.Books.Repositories.IBookThemeRepository, ProgramacionAvanzada.Books.Repositories.EfBookThemeRepository>();
     // Borrow repository will use EF implementation added to project
     builder.Services.AddScoped<ProgramacionAvanzada.Books.Repositories.IBorrowRepository, ProgramacionAvanzada.Books.Repositories.EfBorrowRepository>();
+    // BookCopy repository
+    builder.Services.AddScoped<ProgramacionAvanzada.Books.Repositories.IBookCopyRepository, ProgramacionAvanzada.Books.Repositories.EfBookCopyRepository>();
 }
 else
 {
@@ -87,6 +92,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+// Map SignalR hub
+app.MapHub<ProgramacionAvanzada.Books.Hubs.BookCopiesStatsHub>("/bookCopiesStatsHub");
 
 
 app.Run();
